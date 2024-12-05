@@ -29,4 +29,5 @@ plt.xlabel("x (Observable Dimension)")
 plt.ylabel("z (Hidden Dimension)")
 plt.legend(fontsize=10)
 
+plt.show()
 # Show the plot
