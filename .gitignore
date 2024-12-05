@@ -1,5 +1,5 @@
-folder/math.aux
-folder/math.fdb_latexmk
-folder/math.fls
-folder/math.log
-folder/math.synctex.gz
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
