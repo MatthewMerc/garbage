@@ -1,145 +1,109 @@
-{-# LANGUAGE InstanceSigs #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+-- Define a data type for Ordinals
+data Ordinal = Finite Int | Transfinite Int Int  -- Transfinite(Int for ω, Int for ω+k)
+             deriving (Eq)
 
-module Surreal where
+instance Show Ordinal where
+  show (Finite n) = show n
+  show (Transfinite w 0)
+    | w == 1    = "ω"       -- Simplify 1ω to ω
+    | w > 1     = "ω^" ++ show w  -- Show ω raised to the power
+  show (Transfinite w k)
+    | w == 1    = "ω + " ++ show k  -- Simplify 1ω + k to ω + k
+    | w > 1     = "ω^" ++ show w ++ " + " ++ show k  -- ω^w + k when w > 1
 
-import Data.List (intercalate)
-import qualified Data.Set as Set
+-- Define addition for Ordinals
+addOrdinals :: Ordinal -> Ordinal -> Ordinal
+addOrdinals (Finite a) (Finite b) = Finite (a + b)
+addOrdinals (Finite a) (Transfinite w k) = Transfinite w (k + a)
+addOrdinals (Transfinite w k) (Finite b) = Transfinite w (k + b)
+addOrdinals (Transfinite w1 k1) (Transfinite w2 k2) =
+  Transfinite (w1 + w2) (k1 + k2)  -- Sum ω-coefficients and constants
 
--- Simplified Surreal representation that only tracks essential information
-data Surreal = 
-    Zero
-  | One
-  | NegOne
-  | Succ Surreal
-  | Pred Surreal
-  | Sum Surreal Surreal
-  | Prod Surreal Surreal
-  deriving (Eq)
+-- Define multiplication for Ordinals
+multiplyOrdinals :: Ordinal -> Ordinal -> Ordinal
+multiplyOrdinals (Finite a) (Finite b) = Finite (a * b)
+multiplyOrdinals (Finite a) (Transfinite w k) = Transfinite (w * a) (k * a)
+multiplyOrdinals (Transfinite w k) (Finite b) = Transfinite (w * b) (k * b)
+multiplyOrdinals (Transfinite w1 _) (Transfinite w2 _) =
+  -- Properly compute ω-coefficients for ω × ω = ω^2
+  Transfinite (w1 * w2) 0
 
--- Basic constructors
-surZero :: Surreal
-surZero = Zero
+-- Define exponentiation for Ordinals
+exponentiateOrdinals :: Ordinal -> Ordinal -> Ordinal
+exponentiateOrdinals (Finite a) (Finite b) = Finite (a ^ b)
+exponentiateOrdinals _ (Finite 0) = Finite 1  -- Anything to the power of 0 is 1
+exponentiateOrdinals (Finite a) (Transfinite w _) =
+  Transfinite (a ^ w) 0  -- Exponentiation of finite base with transfinite
+exponentiateOrdinals (Transfinite w _) (Finite b) =
+  Transfinite (w ^ b) 0  -- Finite exponent multiplies ω's power
+exponentiateOrdinals (Transfinite w1 _) (Transfinite w2 _) =
+  -- Correctly compute ω^ω structure
+  Transfinite (w1 ^ w2) 0
 
-surOne :: Surreal
-surOne = One
+-- Define a data type for Surreal Numbers
+data Surreal = Zero
+             | Node { left :: [Surreal], right :: [Surreal], birthday :: Ordinal }
+             deriving (Show, Eq)
 
-surNOne :: Surreal
-surNOne = NegOne
+-- A function to compute the first common ancestor of two surreal numbers
+commonAncestor :: Surreal -> Surreal -> Surreal
+commonAncestor Zero _ = Zero
+commonAncestor _ Zero = Zero
+commonAncestor x y
+  | x == y    = x
+  | otherwise = Zero  -- Simplification: All surreal numbers trace back to Zero
 
--- Simplified ordering based on construction
-instance Ord Surreal where
-    compare Zero Zero = EQ
-    compare One One = EQ
-    compare NegOne NegOne = EQ
-    compare (Succ x) (Succ y) = compare x y
-    compare (Pred x) (Pred y) = compare x y
-    compare Zero One = LT
-    compare One Zero = GT
-    compare Zero NegOne = GT
-    compare NegOne Zero = LT
-    compare x y = 
-        case (normalize x, normalize y) of
-            (nx, ny) | nx == ny -> EQ
-                     | otherwise -> compare (evalToInt nx) (evalToInt ny)
+-- A function to compute the birthday of a surreal number
+getBirthday :: Surreal -> Ordinal
+getBirthday Zero = Finite 0
+getBirthday (Node _ _ b) = b
 
--- Normalize surreal numbers to simplest form
-normalize :: Surreal -> Surreal
-normalize Zero = Zero
-normalize One = One
-normalize NegOne = NegOne
-normalize (Succ Zero) = One
-normalize (Pred Zero) = NegOne
-normalize (Sum x y) = 
-    case (normalize x, normalize y) of
-        (Zero, y') -> y'
-        (x', Zero) -> x'
-        (x', y') -> addNormalized x' y'
-normalize (Prod x y) = 
-    case (normalize x, normalize y) of
-        (Zero, _) -> Zero
-        (_, Zero) -> Zero
-        (One, y') -> y'
-        (x', One) -> x'
-        (x', y') -> multNormalized x' y'
-normalize x = x
+-- A function to compute the path distance between two surreal numbers
+pathDistance :: Surreal -> Surreal -> Ordinal
+pathDistance x y
+  | x == y    = Finite 0
+  | otherwise =
+      addOrdinals (getBirthday x) (getBirthday y)
 
--- Helper function to evaluate to integer when possible
-evalToInt :: Surreal -> Int
-evalToInt Zero = 0
-evalToInt One = 1
-evalToInt NegOne = -1
-evalToInt (Succ x) = 1 + evalToInt x
-evalToInt (Pred x) = -1 + evalToInt x
-evalToInt (Sum x y) = evalToInt x + evalToInt y
-evalToInt (Prod x y) = evalToInt x * evalToInt y
+-- Define the measure function
+measure :: Surreal -> Surreal -> Ordinal
+measure x y =
+  let ancestor = commonAncestor x y
+      delta = pathDistance x y
+  in delta -- Measure is delta directly since β(ancestor) = 0
 
--- Simplified arithmetic operations
-addNormalized :: Surreal -> Surreal -> Surreal
-addNormalized x y = 
-    case (evalToInt x, evalToInt y) of
-        (nx, ny) -> fromInt (nx + ny)
+-- Example Surreal Numbers
+epsilon :: Surreal
+epsilon = Node [Zero] [] (Transfinite 0 1)  -- Infinitesimal at ω+1
 
-multNormalized :: Surreal -> Surreal -> Surreal
-multNormalized x y = 
-    case (evalToInt x, evalToInt y) of
-        (nx, ny) -> fromInt (nx * ny)
+omega :: Surreal
+omega = Node [] [Zero] (Transfinite 1 0)  -- Infinite at ω
 
--- Convert integer to Surreal
-fromInt :: Int -> Surreal
-fromInt 0 = Zero
-fromInt 1 = One
-fromInt (-1) = NegOne
-fromInt n | n > 0 = Succ (fromInt (n-1))
-         | n < 0 = Pred (fromInt (n+1))
+half :: Surreal
+half = Node [Zero] [Node [Zero] [] (Finite 1)] (Finite 2) -- 1/2
 
-instance Num Surreal where
-    (+) = Sum
-    (*) = Prod
-    negate Zero = Zero
-    negate One = NegOne
-    negate NegOne = One
-    negate (Succ x) = Pred (negate x)
-    negate (Pred x) = Succ (negate x)
-    negate (Sum x y) = Sum (negate x) (negate y)
-    negate (Prod x y) = Prod (negate x) y
-    abs x = if evalToInt x < 0 then negate x else x
-    signum x = case compare x Zero of
-                 LT -> NegOne
-                 EQ -> Zero
-                 GT -> One
-    fromInteger n = fromInt (fromIntegral n)
+negativeHalf :: Surreal
+negativeHalf = Node [Node [Zero] [] (Finite 1)] [Zero] (Finite 2) -- -1/2
 
--- Generate successor
-succ' :: Int -> Surreal -> Surreal
-succ' n x = iterate Succ x !! n
-
--- Show instance
-instance Show Surreal where
-    show x = case normalize x of
-        Zero -> "0"
-        One -> "1"
-        NegOne -> "-1"
-        s -> show (evalToInt s)
-
--- Pretty print
-prettyPrint :: Surreal -> String
-prettyPrint s = show s ++ " (normalized form)"
-
+-- Main function to test surreal number measures and ordinal arithmetic
 main :: IO ()
 main = do
-    putStrLn "Basic surreal numbers:"
-    putStrLn $ prettyPrint surZero
-    putStrLn $ prettyPrint surOne
-    putStrLn $ prettyPrint surNOne
-    
-    putStrLn "\nArithmetic:"
-    putStrLn $ prettyPrint (surOne + surOne)
-    putStrLn $ prettyPrint (surOne * surOne)
-    putStrLn $ prettyPrint (succ' 2 surZero)
-    
-    putStrLn "\nComplex calculation:"
-    putStrLn $ prettyPrint (succ' 4 surZero * succ' 2 surZero)
-    
-    putStrLn "\nSome larger numbers:"
-    mapM_ (putStrLn . prettyPrint) [succ' n surZero | n <- [1..5]]
+  -- Measure examples
+  let dist1 = measure half negativeHalf
+  putStrLn $ "Measure between 1/2 and -1/2: " ++ show dist1
+
+  let dist2 = measure epsilon omega
+  putStrLn $ "Measure between epsilon and omega: " ++ show dist2
+
+  let dist3 = measure (Node [half] [] (Finite 3)) (Node [negativeHalf] [] (Finite 3))  -- 1/4 and -1/4
+  putStrLn $ "Measure between 1/4 and -1/4: " ++ show dist3
+
+  let dist4 = measure (Node [half] [] (Finite 3)) half  -- 1/4 and 1/2
+  putStrLn $ "Measure between 1/4 and 1/2: " ++ show dist4
+
+  let dist5 = measure omega (Node [Zero] [] (Transfinite 2 0))  -- ω and ω^2
+  putStrLn $ "Measure between ω and ω^2: " ++ show dist5
+
+  let dist6 = measure omega (Node [Zero] [] (Transfinite 1 1))  -- ω and -ω
+  putStrLn $ "Measure between ω and -ω: " ++ show dist6
+

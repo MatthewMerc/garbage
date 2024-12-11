@@ -1,0 +1,86 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+\title{Ordinal Arithmetic and Surreal Number Measures}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper explores the interaction between surreal numbers and ordinal arithmetic, focusing on the measure theory of surreal numbers and operations on infinite ordinals. We define a tree-based measure \( \tau \) for surreal numbers and develop arithmetic rules for ordinal addition, multiplication, and exponentiation. The challenges of representing transfinite arithmetic and preserving intuitive results like \( \omega + \omega = 2\omega \) and \( \omega \times \omega = \omega^2 \) are addressed.
+\end{abstract}
+
+\section{Introduction}
+Surreal numbers, introduced by Conway, are the largest ordered field, encompassing real numbers, infinitesimals, and infinities. They are constructed as a binary tree where each number has a "birthday" corresponding to its stage of creation. This unique structure allows for a natural measure theory and connects with ordinal arithmetic for transfinite operations.
+
+Ordinal arithmetic, by contrast, defines operations like addition, multiplication, and exponentiation for infinite ordinals, governed by rules that prioritize order types rather than magnitudes.
+
+This paper combines these two areas, developing a measure theory for surreal numbers and extending it to include ordinal arithmetic. We explore how infinite operations like \( \omega + \omega \), \( \omega \times \omega \), and \( \omega^\omega \) behave in this framework.
+
+\section{Surreal Number Measure Theory}
+
+\subsection{Path Distance}
+The path distance \( \delta(x, y) \) between two surreal numbers \( x \) and \( y \) is defined based on their positions in the binary construction tree. Specifically:
+\[
+\delta(x, y) = d(x, A(x, y)) + d(y, A(x, y)),
+\]
+where \( A(x, y) \) is the first common ancestor of \( x \) and \( y \), and \( d(x, A(x, y)) \) represents the number of steps from \( x \) to \( A(x, y) \) in the tree.
+
+\subsection{Tree-Based Measure \( \tau \)}
+Using the path distance, the measure \( \tau(x, y) \) is defined as:
+\[
+\tau(x, y) = \delta(x, y).
+\]
+
+\subsection{Examples of Path Distance and Measure}
+\begin{itemize}
+    \item For \( x = \frac{1}{2} \) and \( y = -\frac{1}{2} \):
+    \[
+    A(x, y) = 0, \quad \delta(x, y) = d(x, 0) + d(y, 0) = 2 + 2 = 4, \quad \tau(x, y) = 4.
+    \]
+    \item For \( x = \epsilon \) (an infinitesimal) and \( y = \omega \) (an infinite):
+    \[
+    A(x, y) = 0, \quad \delta(x, y) = (\omega + 1) + \omega = \omega + 1, \quad \tau(x, y) = \omega + 1.
+    \]
+\end{itemize}
+
+\section{Ordinal Arithmetic}
+
+\subsection{Ordinal Addition}
+Ordinal addition is defined as follows:
+\begin{align*}
+    \omega + n & = \omega, \quad \text{for any finite } n, \\
+    \omega + \omega & = \omega, \quad \text{reflecting the dominance of the infinite term.}
+\end{align*}
+To distinguish \( \omega + \omega \) as \( 2\omega \), we use ordinal multiplication.
+
+\subsection{Ordinal Multiplication}
+Ordinal multiplication reflects repeated addition:
+\[
+\omega \times \omega = \omega^2, \quad \text{representing a sequence of sequences of size } \omega.
+\]
+
+\subsection{Ordinal Exponentiation}
+Ordinal exponentiation reflects repeated multiplication:
+\[
+\omega^\omega = \text{a hierarchy of sequences of increasing size, vastly larger than } \omega^2.
+\]
+
+\subsection{Examples of Ordinal Arithmetic}
+\begin{itemize}
+    \item \( \omega + \omega = \omega \)
+    \item \( \omega \times \omega = \omega^2 \)
+    \item \( \omega^\omega = \omega^\omega \)
+\end{itemize}
+
+\section{Conclusion}
+This paper combines surreal number measures and ordinal arithmetic, highlighting the consistency and challenges of working with transfinite operations. Future work could explore computational representations and connections to set theory or surreal integration.
+
+\end{document}
