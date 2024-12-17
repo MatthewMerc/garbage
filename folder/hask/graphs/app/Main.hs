@@ -122,6 +122,10 @@ data MultiEdge =
 -- The core graph structure
 type HouseGraph = Map.Map HouseSpace [MultiEdge]
 
+-- Initialize a HouseGraph with a list of spaces and their edges
+initializeHouseGraph :: [(HouseSpace, [MultiEdge])] -> HouseGraph
+initializeHouseGraph = Map.fromList
+
 -- A house that changes over time
 data TimeEvolvingHouse = TimeEvolvingHouse {
     baseGraph :: HouseGraph,
@@ -197,33 +201,113 @@ hasResonance m =
 -- Section 5: Example Spaces
 -- ====================================
 
--- The infamous Five and Half Minute Hallway
-fiveMinuteHallway :: HouseGraph
-fiveMinuteHallway = Map.fromList
-  [ (Space "Entrance",
-      [InfiniteEdges (UnSpace "Hallway") (SurrealDistance (Transfinite 1 0)) (Finite 1)]),
-    (UnSpace "Hallway",
-      [SingleEdge (Space "Entrance") (PhysicalDistance 67),
-       InfiniteEdges Abyss (SurrealDistance (Transfinite 2 0)) (Transfinite 1 0)])
-  ]
+-- Combine all example spaces modularly
+connectedHouseGraph :: HouseGraph
+connectedHouseGraph = initializeHouseGraph $
+    fiveMinuteHallwayEdges ++
+    mirrorRoomEdges ++
+    spiralStaircaseEdges ++
+    nonEuclideanCorridorEdges ++
+    infiniteClosetEdges ++
+    fractalLibraryEdges ++
+    connectExamples
 
--- A time-evolving version of the hallway
-timeEvolvingHallway :: TimeEvolvingHouse
-timeEvolvingHallway = TimeEvolvingHouse {
-    baseGraph = fiveMinuteHallway,
-    monodromy = Monodromy {
-        transformationMap = Map.fromList [
-            (Space "Entrance", Identity),
-            (UnSpace "Hallway", LocalTransform (Transfinite 1 0)),
-            (Abyss, DiscontinuousTransform [Transfinite 1 0, Transfinite 2 0])
-        ],
-        singularTimes = [Transfinite 1 0, Transfinite 2 0],
-        memorySubspace = [Space "Entrance"],
-        resonanceFunction = \_ _ -> Identity
-    },
-    currentTime = Finite 0
-}
+-- ====================================================
+-- Define Example Graphs as Explicit Edge Lists
+-- ====================================================
 
+-- Five and Half Minute Hallway
+fiveMinuteHallwayEdges :: [(HouseSpace, [MultiEdge])]
+fiveMinuteHallwayEdges =
+    [ (Space "Entrance", 
+        [ InfiniteEdges (UnSpace "Hallway") (SurrealDistance (Transfinite 1 0)) (Finite 1) ]),
+      (UnSpace "Hallway", 
+        [ SingleEdge (Space "Entrance") (PhysicalDistance 67),
+          InfiniteEdges Abyss (SurrealDistance (Transfinite 2 0)) (Transfinite 1 0) ])
+    ]
+
+-- Mirror Room
+mirrorRoomEdges :: [(HouseSpace, [MultiEdge])]
+mirrorRoomEdges =
+    [ (Space "Origin", 
+        [ SingleEdge (UnSpace "First Reflection") (SurrealDistance (Transfinite 0 1)) ]),
+      (UnSpace "First Reflection", 
+        [ SingleEdge (UnSpace "Second Reflection") (SurrealDistance (Transfinite 0 1)) ]),
+      (UnSpace "Second Reflection", 
+        [ SingleEdge Abyss (SurrealDistance (Transfinite 0 1)) ])
+    ]
+
+-- Spiral Staircase
+spiralStaircaseEdges :: [(HouseSpace, [MultiEdge])]
+spiralStaircaseEdges =
+    [ (UnSpace "Top", 
+        [ SingleEdge (UnSpace "Middle") (SurrealDistance (Transfinite 1 (-1))),
+          SingleEdge Abyss Paradox ]),
+      (UnSpace "Middle", 
+        [ SingleEdge (UnSpace "Top") (PhysicalDistance 13),
+          SingleEdge (UnSpace "Bottom") (SurrealDistance (Transfinite 1 1)) ]),
+      (UnSpace "Bottom", 
+        [ SingleEdge (UnSpace "Middle") (SurrealDistance (Finite (-1))),
+          InfiniteEdges Abyss (SurrealDistance (Transfinite 3 0)) (Transfinite 1 0) ])
+    ]
+
+-- Non-Euclidean Corridor
+nonEuclideanCorridorEdges :: [(HouseSpace, [MultiEdge])]
+nonEuclideanCorridorEdges =
+    [ (Space "Entrance", 
+        [ SingleEdge (UnSpace "Folded Section") (SurrealDistance (Transfinite 1 1)),
+          SingleEdge (Space "Entrance") (PhysicalDistance 10) ]),
+      (UnSpace "Folded Section", 
+        [ SingleEdge (Space "Exit") (SurrealDistance (Finite 67)) ])
+    ]
+
+-- Infinite Closet
+infiniteClosetEdges :: [(HouseSpace, [MultiEdge])]
+infiniteClosetEdges =
+    [ (Space "Closet Door", 
+        [ InfiniteEdges (UnSpace "Endless Interior") (SurrealDistance (Transfinite 1 0)) (Finite 1) ]),
+      (UnSpace "Endless Interior", 
+        [ SingleEdge (Space "Closet Door") (SurrealDistance (Finite (-1))),
+          InfiniteEdges Abyss (SurrealDistance (Transfinite 2 0)) (Transfinite 1 0) ])
+    ]
+
+-- Fractal Library
+fractalLibraryEdges :: [(HouseSpace, [MultiEdge])]
+fractalLibraryEdges =
+    [ (Space "Entrance", 
+        [ InfiniteEdges (UnSpace "First Level Room") (SurrealDistance (Transfinite 1 0)) (Finite 1),
+          SingleEdge Abyss (SurrealDistance (Transfinite 0 1)) ]),
+      (UnSpace "First Level Room", 
+        [ RecursiveEdges (UnSpace "Fractal Room") (SurrealDistance (Transfinite 1 1)) (Node [] [] (Transfinite 1 0)),
+          SingleEdge Abyss (SurrealDistance (Transfinite 2 0)) ]),
+      (UnSpace "Fractal Room", 
+        [ InfiniteEdges (UnSpace "Fractal Room") (SurrealDistance (Transfinite 2 0)) (Transfinite 1 0),
+          SingleEdge Abyss (SurrealDistance (Transfinite 3 0)) ])
+    ]
+
+-- Connections Between Example Spaces
+connectExamples :: [(HouseSpace, [MultiEdge])]
+connectExamples =
+    [ -- Connect Five and Half Minute Hallway to Mirror Room
+      (UnSpace "Hallway", 
+        [ SingleEdge (Space "Origin") (SurrealDistance (Transfinite 0 1)) ]),
+      
+      -- Connect Mirror Room to Spiral Staircase
+      (UnSpace "Second Reflection", 
+        [ SingleEdge (UnSpace "Top") (SurrealDistance (Transfinite 1 0)) ]),
+
+      -- Connect Spiral Staircase to Non-Euclidean Corridor
+      (UnSpace "Bottom", 
+        [ SingleEdge (UnSpace "Folded Section") (SurrealDistance (Finite 0)) ]),
+      
+      -- Connect Non-Euclidean Corridor to Infinite Closet
+      (Space "Exit", 
+        [ SingleEdge (Space "Closet Door") (SurrealDistance (Transfinite 0 1)) ]),
+      
+      -- Connect Infinite Closet to Fractal Library
+      (UnSpace "Endless Interior", 
+        [ SingleEdge (Space "Entrance") (SurrealDistance (Transfinite 0 1)) ])
+    ]
 -- ====================================
 -- Section 6: Visualization
 -- ====================================
@@ -260,19 +344,6 @@ visualizeHouseGraph graph filePath = do
 
 main :: IO ()
 main = do
-    putStrLn "=== Time-Evolving Surreal House Analysis ==="
-
-    -- Visualize the base hallway
-    putStrLn "\nVisualizing Five and Half Minute Hallway..."
-    visualizeHouseGraph fiveMinuteHallway "hallway_base"
-
-    -- Check mathematical conditions
-    putStrLn "\nChecking Mathematical Properties..."
-    putStrLn $ "Local Invertibility at t=0: " ++
-        show (isLocallyInvertible (monodromy timeEvolvingHallway) (Finite 0))
-    putStrLn $ "Has Memory Trace: " ++
-        show (hasMemoryTrace (monodromy timeEvolvingHallway))
-    putStrLn $ "Has Resonance: " ++
-        show (hasResonance (monodromy timeEvolvingHallway))
-
-    putStrLn "\nAnalysis complete. Check the generated PNG files for visualizations."
+    putStrLn "=== Visualizing the Fully Connected Impossible House ==="
+    visualizeHouseGraph connectedHouseGraph "connected_house_graph"
+    putStrLn "Visualization saved as 'connected_house_graph.png'."

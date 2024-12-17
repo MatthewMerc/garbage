@@ -1,0 +1,22 @@
+digraph HouseGraph {
+    graph [rankdir=LR];
+    "Space \"Closet Door\"" -> "UnSpace \"Endless Interior\"" [label="SurrealDistance ω (×1)"];
+    "Space \"Entrance\"" -> "UnSpace \"First Level Room\"" [label="SurrealDistance ω (×1)"];
+    "Space \"Entrance\"" -> Abyss [label="SurrealDistance 1"];
+    "Space \"Exit\"" -> "Space \"Closet Door\"" [label="SurrealDistance 1"];
+    "Space \"Origin\"" -> "UnSpace \"First Reflection\"" [label="SurrealDistance 1"];
+    "UnSpace \"Bottom\"" -> "UnSpace \"Folded Section\"" [label="SurrealDistance 0"];
+    "UnSpace \"Endless Interior\"" -> "Space \"Entrance\"" [label="SurrealDistance 1"];
+    "UnSpace \"First Level Room\"" -> "UnSpace \"Fractal Room\"" [label="SurrealDistance ω + 1 (×S([],[],ω))"];
+    "UnSpace \"First Level Room\"" -> Abyss [label="SurrealDistance ω^2"];
+    "UnSpace \"First Reflection\"" -> "UnSpace \"Second Reflection\"" [label="SurrealDistance 1"];
+    "UnSpace \"Folded Section\"" -> "Space \"Exit\"" [label="SurrealDistance 67"];
+    "UnSpace \"Fractal Room\"" -> "UnSpace \"Fractal Room\"" [label="SurrealDistance ω^2 (×ω)"];
+    "UnSpace \"Fractal Room\"" -> Abyss [label="SurrealDistance ω^3"];
+    "UnSpace \"Hallway\"" -> "Space \"Origin\"" [label="SurrealDistance 1"];
+    "UnSpace \"Middle\"" -> "UnSpace \"Top\"" [label="PhysicalDistance 13"];
+    "UnSpace \"Middle\"" -> "UnSpace \"Bottom\"" [label="SurrealDistance ω + 1"];
+    "UnSpace \"Second Reflection\"" -> "UnSpace \"Top\"" [label="SurrealDistance ω"];
+    "UnSpace \"Top\"" -> "UnSpace \"Middle\"" [label="SurrealDistance ω - 1"];
+    "UnSpace \"Top\"" -> Abyss [label=Paradox];
+}

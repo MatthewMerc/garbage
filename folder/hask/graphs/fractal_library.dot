@@ -1,0 +1,9 @@
+digraph HouseGraph {
+    graph [rankdir=LR];
+    "Space \"Entrance\"" -> "UnSpace \"First Level Room\"" [label="SurrealDistance ω (×1)"];
+    "Space \"Entrance\"" -> Abyss [label="SurrealDistance 1"];
+    "UnSpace \"First Level Room\"" -> "UnSpace \"Fractal Room\"" [label="SurrealDistance ω + 1 (×S([],[],ω))"];
+    "UnSpace \"First Level Room\"" -> Abyss [label="SurrealDistance ω^2"];
+    "UnSpace \"Fractal Room\"" -> "UnSpace \"Fractal Room\"" [label="SurrealDistance ω^2 (×ω)"];
+    "UnSpace \"Fractal Room\"" -> Abyss [label="SurrealDistance ω^3"];
+}
