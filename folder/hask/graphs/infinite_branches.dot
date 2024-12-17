@@ -1,0 +1,8 @@
+digraph HouseGraph {
+    graph [rankdir=LR];
+    "Space \"Origin\"" -> "UnSpace \"Copy\"" [label="Physical 1 (×ω)"];
+    "Space \"Origin\"" -> "UnSpace \"Reflection\"" [label="SurrealDistance 1 (×ω^2)"];
+    "UnSpace \"Copy\"" -> "Space \"Origin\"" [label="Physical 1"];
+    "UnSpace \"Reflection\"" -> "Space \"Origin\"" [label="SurrealDistance 1"];
+    "UnSpace \"Reflection\"" -> Abyss [label="Paradox (×ω)"];
+}

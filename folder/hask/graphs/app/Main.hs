@@ -1,22 +1,39 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use lambda-case" #-}
 
+-- Import necessary libraries for graph visualization and data structures
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 import qualified Data.GraphViz as GV
 import qualified Data.GraphViz.Types as GVT
-import qualified Data.GraphViz.Printing as GVP
 import qualified Data.GraphViz.Types.Monadic as GVM
 import qualified Data.GraphViz.Attributes.Complete as GVA
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TLIO
 import System.Process (callCommand)
 import Control.Monad (forM_)
+import Debug.Trace (trace)
 
--- Ordinal Type
+-- ====================================
+-- Section 1: Fundamental Mathematical Structures
+-- ====================================
+
+-- Ordinal numbers form the backbone of our surreal number system
+-- They can be finite (regular numbers) or transfinite (like ω)
 data Ordinal = Finite Int | Transfinite Int Int
              deriving (Eq)
 
--- Add Ord instance for Ordinal
+-- Show instance for pretty-printing ordinals
+instance Show Ordinal where
+    show (Finite n) = show n
+    show (Transfinite w k)
+        | w < 0     = "(-ω)^" ++ show (abs w) ++ (if k == 0 then "" else " + " ++ show k)
+        | w == 0    = if k == 0 then "0" else show k
+        | w == 1    = "ω" ++ (if k == 0 then "" else (if k > 0 then " + " else " - ") ++ show (abs k))
+        | otherwise = "ω^" ++ show w ++ (if k == 0 then "" else (if k > 0 then " + " else " - ") ++ show (abs k))
+
+-- Ordering for ordinals
 instance Ord Ordinal where
     compare (Finite a) (Finite b) = compare a b
     compare (Finite _) (Transfinite _ _) = LT
@@ -26,164 +43,234 @@ instance Ord Ordinal where
             EQ -> compare k1 k2
             other -> other
 
-data Surreal = Zero
-             | Node { left :: [Surreal], right :: [Surreal], birthday :: Ordinal }
-             deriving (Eq)
-
--- Add Ord instance for Surreal
-instance Ord Surreal where
-    compare Zero Zero = EQ
-    compare Zero (Node _ _ _) = LT
-    compare (Node _ _ _) Zero = GT
-    compare (Node l1 r1 b1) (Node l2 r2 b2) =
-        case compare b1 b2 of
-            EQ -> case (compare (length l1) (length l2), compare (length r1) (length r2)) of
-                      (EQ, EQ) -> EQ
-                      (EQ, c) -> c
-                      (c, _) -> c
-            other -> other
-
-
--- Graph Type
-type Edge = (Node, Weight)
-type Graph = Map.Map Node [Edge]
-
--- Initialize Graph
-initializeGraph :: [(Node, [Edge])] -> Graph
-initializeGraph = Map.fromList
-
--- Surreal Arithmetic
+-- First, we need to define how ordinal arithmetic works
 addOrdinals :: Ordinal -> Ordinal -> Ordinal
 addOrdinals (Finite a) (Finite b) = Finite (a + b)
 addOrdinals (Finite a) (Transfinite w k) = Transfinite w (k + a)
 addOrdinals (Transfinite w k) (Finite b) = Transfinite w (k + b)
-addOrdinals (Transfinite w1 k1) (Transfinite w2 k2) = Transfinite (w1 + w2) (k1 + k2)
+addOrdinals (Transfinite w1 k1) (Transfinite w2 k2) = 
+    Transfinite (w1 + w2) (k1 + k2)
 
--- Update Flow (Reduce Weights by 1)
-updateFlow :: Graph -> Graph
-updateFlow = Map.mapWithKey updateNodeFlow
-  where
-    updateNodeFlow _ = map (\(n, w) -> (n, addOrdinals w (Finite (-1))))
+-- We should also add multiplication for completeness
+multiplyOrdinals :: Ordinal -> Ordinal -> Ordinal
+multiplyOrdinals (Finite a) (Finite b) = Finite (a * b)
+multiplyOrdinals (Finite 0) _ = Finite 0
+multiplyOrdinals (Finite a) (Transfinite w k) = 
+    if a > 0 
+    then Transfinite w k 
+    else Finite 0
+multiplyOrdinals (Transfinite w1 k1) (Transfinite w2 k2) = 
+    Transfinite (w1 + w2) (k1 * k2)
 
--- Detect Bottlenecks
-detectBottlenecks :: Graph -> [Node]
-detectBottlenecks graph =
-  Map.keys $ Map.filter (\edges -> sumWeights edges < Finite 1) graph
-  where
-    sumWeights = foldr (addOrdinals . snd) (Finite 0)
+-- Surreal numbers extend ordinals to include numbers like ε
+data Surreal = Zero
+             | Node { left :: [Surreal], right :: [Surreal], birthday :: Ordinal }
+             deriving (Eq)
 
--- Apply Perturbations (Add New Edges)
-applyPerturbations :: Graph -> Graph
-applyPerturbations graph =
-  let newEdge = (Node [] [Zero] (Transfinite 2 0), Transfinite 1 0) -- ω^2
-      updatedNode = fromMaybe [] (Map.lookup Zero graph) ++ [newEdge]
-  in Map.insert Zero updatedNode graph
-
--- Update the Surreal Show instance to be more detailed
 instance Show Surreal where
     show Zero = "0"
-    show (Node l r b) = "S(" ++ showList l ++ "," ++ showList r ++ "," ++ show b ++ ")"
-        where 
-            showList [] = "[]"
-            showList xs = show xs
+    show (Node l r b) = "S(" ++ show l ++ "," ++ show r ++ "," ++ show b ++ ")"
 
-instance Show Ordinal where
-    show (Finite n) = show n
-    show (Transfinite w 0)
-        | w == 1    = "ω"
-        | w > 1     = "ω^" ++ show w
-        | otherwise = "ω^(" ++ show w ++ ")"  -- handle negative w
-    show (Transfinite w k)
-        | w == 1    = "ω + " ++ show k
-        | w > 1     = "ω^" ++ show w ++ " + " ++ show k
-        | otherwise = "ω^(" ++ show w ++ ") + " ++ show k  -- handle negative w
+-- ====================================
+-- Section 2: Time Evolution and Transformations
+-- ====================================
 
--- Type aliases need their own Show instances
-type Node = Surreal
-type Weight = Ordinal
+-- Represents how spaces can transform over time
+data Transformation =
+    Identity                            -- No change
+  | LocalTransform Ordinal             -- Smooth local change
+  | DiscontinuousTransform [Ordinal]   -- Jump discontinuities
+  | ResonantTransform Ordinal Ordinal  -- Interaction between two times
+  deriving (Show, Eq)
+
+-- Monodromy captures how spaces change as we move through time
+data Monodromy = Monodromy {
+    transformationMap :: Map.Map HouseSpace Transformation,
+    singularTimes :: [Ordinal],        -- Special times where continuity breaks
+    memorySubspace :: [HouseSpace],    -- Spaces that maintain some continuity
+    resonanceFunction :: Transformation -> Transformation -> Transformation
+}
+
+-- ====================================
+-- Section 3: House Space Structures
+-- ====================================
+
+-- Different types of spaces in our impossible house
+data HouseSpace =
+    Space String           -- Normal, "real" spaces
+  | UnSpace String        -- Impossible spaces
+  | Abyss                -- The void beyond reality
+  deriving (Eq, Ord, Show)
+
+-- Types of distances between spaces
+data HouseDistance =
+    PhysicalDistance Int
+  | SurrealDistance Ordinal
+  | Paradox
+  deriving (Eq, Show)
+
+-- Edges can connect spaces in various ways
+data MultiEdge =
+    SingleEdge HouseSpace HouseDistance
+  | InfiniteEdges HouseSpace HouseDistance Ordinal
+  | RecursiveEdges HouseSpace HouseDistance Surreal
+  | FractionalEdge HouseSpace HouseDistance Rational
+  deriving (Show, Eq)
+
+-- The core graph structure
+type HouseGraph = Map.Map HouseSpace [MultiEdge]
+
+-- A house that changes over time
+data TimeEvolvingHouse = TimeEvolvingHouse {
+    baseGraph :: HouseGraph,
+    monodromy :: Monodromy,
+    currentTime :: Ordinal
+}
+
+-- ====================================
+-- Section 4: Mathematical Conditions
+-- ====================================
+
+-- Condition 1: Local Invertibility
+isLocallyInvertible :: Monodromy -> Ordinal -> Bool
+isLocallyInvertible m t =
+    notElem t (singularTimes m) &&
+    all isInvertibleTransform (Map.elems $ transformationMap m)
+  where
+    isInvertibleTransform Identity = True
+    isInvertibleTransform (LocalTransform _) = True
+    isInvertibleTransform _ = False
 
 
+-- Condition 1: Memory Trace
+hasMemoryTrace :: Monodromy -> Bool
+hasMemoryTrace m = not (null (memorySubspace m)) &&
+                   all (hasLimitAtSingularities m) (memorySubspace m)
+  where
+    hasLimitAtSingularities m space =
+        all (\t -> leftLimit t space m == rightLimit t space m) (singularTimes m)
 
--- Or if you prefer simpler output for nodes in the graph visualization:
-showNode :: Node -> String
-showNode Zero = "0"
-showNode (Node _ _ b) = "node_" ++ show b
+-- First, let's define what we mean by a limit in our space
+data Limit =
+    FiniteLimit Double
+  | TransfiniteLimit Ordinal
+  | Undefined
+  deriving (Eq, Show)
 
-showWeight :: Weight -> String
-showWeight = show
+leftLimit :: Ordinal -> HouseSpace -> Monodromy -> Limit
+leftLimit t space m = case Map.lookup space (transformationMap m) of
+    Just Identity -> FiniteLimit 0
+    Just (LocalTransform ord) -> TransfiniteLimit ord
+    Just (DiscontinuousTransform ords) ->
+        if t `elem` ords
+        then Undefined
+        else FiniteLimit 0
+    Just (ResonantTransform o1 o2) -> TransfiniteLimit (addOrdinals o1 o2)
+    Nothing -> Undefined
 
--- Then update the visualization code to use these:
-visualizeGraph :: Graph -> FilePath -> IO ()
-visualizeGraph graph filePath = do
-    let dotGraph = GVM.digraph (GVT.Str "SurrealGraph") $ do
+rightLimit :: Ordinal -> HouseSpace -> Monodromy -> Limit
+rightLimit t space m = case Map.lookup space (transformationMap m) of
+    Just Identity -> FiniteLimit 0
+    Just (LocalTransform ord) -> TransfiniteLimit ord
+    Just (DiscontinuousTransform ords) ->
+        if t `elem` ords
+        then Undefined
+        else FiniteLimit 0
+    Just (ResonantTransform o1 o2) -> TransfiniteLimit (addOrdinals o1 o2)
+    Nothing -> Undefined
+
+-- Condition 3: Resonance
+hasResonance :: Monodromy -> Bool
+hasResonance m =
+    all checkResonance (pairs (singularTimes m))
+  where
+    pairs xs = [(x,y) | x <- xs, y <- xs, x < y]
+    checkResonance (ti, tj) =
+        case Map.lookup (head $ memorySubspace m) (transformationMap m) of
+            Just trans -> isResonant trans ti tj
+            Nothing -> False
+    isResonant trans t1 t2 = True  -- Simplified check
+
+-- ====================================
+-- Section 5: Example Spaces
+-- ====================================
+
+-- The infamous Five and Half Minute Hallway
+fiveMinuteHallway :: HouseGraph
+fiveMinuteHallway = Map.fromList
+  [ (Space "Entrance",
+      [InfiniteEdges (UnSpace "Hallway") (SurrealDistance (Transfinite 1 0)) (Finite 1)]),
+    (UnSpace "Hallway",
+      [SingleEdge (Space "Entrance") (PhysicalDistance 67),
+       InfiniteEdges Abyss (SurrealDistance (Transfinite 2 0)) (Transfinite 1 0)])
+  ]
+
+-- A time-evolving version of the hallway
+timeEvolvingHallway :: TimeEvolvingHouse
+timeEvolvingHallway = TimeEvolvingHouse {
+    baseGraph = fiveMinuteHallway,
+    monodromy = Monodromy {
+        transformationMap = Map.fromList [
+            (Space "Entrance", Identity),
+            (UnSpace "Hallway", LocalTransform (Transfinite 1 0)),
+            (Abyss, DiscontinuousTransform [Transfinite 1 0, Transfinite 2 0])
+        ],
+        singularTimes = [Transfinite 1 0, Transfinite 2 0],
+        memorySubspace = [Space "Entrance"],
+        resonanceFunction = \_ _ -> Identity
+    },
+    currentTime = Finite 0
+}
+
+-- ====================================
+-- Section 6: Visualization
+-- ====================================
+
+visualizeHouseGraph :: HouseGraph -> FilePath -> IO ()
+visualizeHouseGraph graph filePath = do
+    let dotGraph = GVM.digraph (GVT.Str "HouseGraph") $ do
             GVM.graphAttrs [GVA.RankDir GVA.FromLeft]
-            forM_ (Map.toList graph) $ \(src, edges) -> do
-                forM_ edges $ \(dst, weight) -> do
-                    GVM.edge (GVT.Str $ TL.pack $ showNode src)
-                           (GVT.Str $ TL.pack $ showNode dst)
-                           [GVA.Label $ GVA.StrLabel $ TL.pack $ showWeight weight]
+            forM_ (Map.toList graph) $ \(src, edges) ->
+                forM_ edges $ \edge -> case edge of
+                    SingleEdge dst dist ->
+                        GVM.edge (GVT.Str $ TL.pack $ show src)
+                               (GVT.Str $ TL.pack $ show dst)
+                               [GVA.Label $ GVA.StrLabel $ TL.pack $ show dist]
+                    InfiniteEdges dst dist n ->
+                        GVM.edge (GVT.Str $ TL.pack $ show src)
+                               (GVT.Str $ TL.pack $ show dst)
+                               [GVA.Label $ GVA.StrLabel $ TL.pack $ show dist ++ " (×" ++ show n ++ ")"]
+                    RecursiveEdges dst dist s ->
+                        GVM.edge (GVT.Str $ TL.pack $ show src)
+                               (GVT.Str $ TL.pack $ show dst)
+                               [GVA.Label $ GVA.StrLabel $ TL.pack $ show dist ++ " (×" ++ show s ++ ")"]
+                    FractionalEdge dst dist r ->
+                        GVM.edge (GVT.Str $ TL.pack $ show src)
+                               (GVT.Str $ TL.pack $ show dst)
+                               [GVA.Label $ GVA.StrLabel $ TL.pack $ show dist ++ " (×" ++ show r ++ ")"]
 
     TLIO.writeFile (filePath ++ ".dot") (GV.printDotGraph dotGraph)
     callCommand $ "dot -Tpng -o " ++ filePath ++ ".png " ++ filePath ++ ".dot"
 
--- Convert Graph to DOT Representation
+-- ====================================
+-- Section 7: Main Program
+-- ====================================
 
-toDotRep :: Graph -> [(String, String, String)]
-toDotRep graph =
-  [ (showNode src, showNode dst, showWeight weight)
-  | (src, edges) <- Map.toList graph
-  , (dst, weight) <- edges
-  ]
-
-
--- System Evaluation
-evaluateSystem :: Graph -> IO ()
-evaluateSystem graph = do
-  putStrLn "System Evaluation:"
-  putStrLn $ "Total Nodes: " ++ show (Map.size graph)
-  putStrLn $ "Bottlenecks: " ++ show (detectBottlenecks graph)
-
--- Example Surreal Numbers
-epsilon :: Surreal
-epsilon = Node [Zero] [] (Transfinite 0 1)  -- Infinitesimal ω + 1
-
-omega :: Surreal
-omega = Node [] [Zero] (Transfinite 1 0)   -- Infinite ω
-
-half :: Surreal
-half = Node [Zero] [Node [Zero] [] (Finite 1)] (Finite 2)  -- 1/2
-
--- Main Program
 main :: IO ()
 main = do
-  -- Step 1: Initialize Graph
-  let initialGraph = initializeGraph
-        [ (Zero, [(epsilon, Transfinite 0 1), (omega, Transfinite 1 0)])
-        , (epsilon, [(omega, Transfinite 1 1)])
-        , (omega, [(Zero, Transfinite 1 0)])
-        ]
-  putStrLn "Initial Graph:"
-  print (Map.toList initialGraph)
+    putStrLn "=== Time-Evolving Surreal House Analysis ==="
 
-  -- Step 2: Update Flow
-  let updatedGraph = updateFlow initialGraph
-  putStrLn "\nGraph After Flow Update:"
-  print (Map.toList updatedGraph)
+    -- Visualize the base hallway
+    putStrLn "\nVisualizing Five and Half Minute Hallway..."
+    visualizeHouseGraph fiveMinuteHallway "hallway_base"
 
-  -- Step 3: Detect Bottlenecks
-  let bottlenecks = detectBottlenecks updatedGraph
-  putStrLn "\nDetected Bottlenecks:"
-  print bottlenecks
+    -- Check mathematical conditions
+    putStrLn "\nChecking Mathematical Properties..."
+    putStrLn $ "Local Invertibility at t=0: " ++
+        show (isLocallyInvertible (monodromy timeEvolvingHallway) (Finite 0))
+    putStrLn $ "Has Memory Trace: " ++
+        show (hasMemoryTrace (monodromy timeEvolvingHallway))
+    putStrLn $ "Has Resonance: " ++
+        show (hasResonance (monodromy timeEvolvingHallway))
 
-  -- Step 4: Apply Perturbations
-  let perturbedGraph = applyPerturbations updatedGraph
-  putStrLn "\nGraph After Applying Perturbations:"
-  print (Map.toList perturbedGraph)
-
-  -- Step 5: Evaluate System
-  evaluateSystem perturbedGraph
-
-  -- Step 6: Visualize Graph
-  putStrLn "\nVisualizing Graph..."
-  visualizeGraph perturbedGraph "surreal_graph"
-  putStrLn "Graph visualization saved as surreal_graph.png."
+    putStrLn "\nAnalysis complete. Check the generated PNG files for visualizations."

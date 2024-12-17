@@ -1,0 +1,9 @@
+digraph HouseGraph {
+    graph [rankdir=LR];
+    "UnSpace \"Bottom\"" -> "UnSpace \"Middle\"" [label="SurrealDistance -1"];
+    "UnSpace \"Bottom\"" -> Abyss [label="SurrealDistance ω^3"];
+    "UnSpace \"Middle\"" -> "UnSpace \"Top\"" [label="Physical 13"];
+    "UnSpace \"Middle\"" -> "UnSpace \"Bottom\"" [label="SurrealDistance ω + 1"];
+    "UnSpace \"Top\"" -> "UnSpace \"Middle\"" [label="SurrealDistance ω - 1"];
+    "UnSpace \"Top\"" -> Abyss [label=Paradox];
+}

@@ -1,28 +1,25 @@
-
 \documentclass[12pt]{article}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsthm}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{listings}
-\usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{tikz}
+\geometry{margin=1in}
 
-\definecolor{codegray}{gray}{0.9}
+% Custom commands
+\newcommand{\ord}[0]{\mathcal{O}}
+\newcommand{\sur}[0]{\mathcal{S}}
+\newcommand{\house}[0]{\mathcal{H}}
 
-\lstset{
-  basicstyle=\ttfamily\footnotesize,
-  backgroundcolor=\color{codegray},
-  frame=single,
-  breaklines=true,
-  captionpos=b,
-  keywordstyle=\color{blue},
-  commentstyle=\color{gray},
-  stringstyle=\color{red}
-}
+% Theorem Environments
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
 
-\title{Dynamic Graph Framework with Surreal Numbers and Visualization}
-\author{}
+\title{Time-Evolving Paradoxical Spaces:\\A Dynamic Graph Framework with Surreal Distances}
+\author{Author Name}
 \date{\today}
 
 \begin{document}
@@ -30,125 +27,164 @@
 \maketitle
 
 \begin{abstract}
-This paper presents an extended dynamic graph framework that integrates surreal numbers for representing nodes, edges, and flows. By leveraging ordinal arithmetic and surreal constructions, we model hierarchical and infinite systems such as traffic networks, knowledge graphs, and decision processes. The framework includes dynamic updates, bottleneck detection, perturbation mechanisms, and visualization via Graphviz.
+We present a novel mathematical framework for modeling time-evolving graphs with surreal ordinal distances and recursive paradoxical spaces. Building on surreal number theory, dynamic graph systems, and memory-like structures from sheaf theory, we analyze the evolution of spaces over time. This approach incorporates infinitesimal and transfinite changes, resonance phenomena, and singularities. Applications include non-Euclidean geometries, dynamic systems, and semiotic paradoxes inspired by recursive spaces such as the \emph{House of Leaves}.
 \end{abstract}
+
+\tableofcontents
 
 \section{Introduction}
 
-Surreal numbers, introduced by John Horton Conway, provide a universal number system that includes real numbers, infinities, and infinitesimals. These properties make surreal numbers a natural choice for modeling hierarchical and complex systems. This paper demonstrates how surreal numbers can be integrated into a dynamic graph framework, with applications in traffic systems, policy negotiation, and knowledge graphs.
+Spaces that evolve recursively over time, exhibit paradoxical growth, or involve transfinite measures require new mathematical tools. Traditional graph theory is insufficient for representing:
+\begin{itemize}
+    \item Flows through spaces with infinitesimal and infinite distances,
+    \item Dynamic transformations of nodes and edges over time,
+    \item Singularities and resonance points where spatial continuity breaks.
+\end{itemize}
+
+Our framework builds on three primary tools:
+\begin{enumerate}
+    \item \textbf{Surreal Numbers:} Recursive structures that model infinite and infinitesimal changes,
+    \item \textbf{Dynamic Graphs:} Graphs with evolving nodes, edges, and surreal weights,
+    \item \textbf{Monodromy and Memory:} Structures inspired by sheaf theory to capture time evolution and resonance.
+\end{enumerate}
+
+This paper introduces the mathematical definitions, properties, and examples for analyzing such spaces.
 
 \section{Surreal Numbers and Ordinals}
 
-\subsection{Definition}
-Surreal numbers are defined recursively as:
-\begin{equation}
-x = \{ L | R \},
-\end{equation}
-where \( L \) and \( R \) are sets of surreal numbers such that \( l < r \) for all \( l \in L \) and \( r \in R \).
+\subsection{Surreal Numbers}
+\begin{definition}[Surreal Numbers]
+A surreal number $\sur$ is defined recursively as:
+\[
+\sur = \{ L \mid R \}, \quad \text{where } L, R \subseteq \sur \text{ and } L < R.
+\]
+\end{definition}
 
-Ordinals are a subset of surreal numbers that represent hierarchical positions. For example:
-\begin{equation}
-\omega + 1, \quad \omega^2, \quad \omega^\omega.
-\end{equation}
+Surreal numbers extend real numbers to include infinitesimal ($\epsilon$) and transfinite ($\omega$) values.
 
-\subsection{Operations}
-Ordinal arithmetic is extended to surreal numbers:
+\begin{example}[Basic Surreal Numbers]
+\[
+0 = \{ \mid \}, \quad 1 = \{ 0 \mid \}, \quad -1 = \{ \mid 0 \}, \quad \frac{1}{2} = \{ 0 \mid 1 \}.
+\]
+Infinitesimals and infinities are given as:
+\[
+\epsilon = \{ 0 \mid \}, \quad \omega = \{ \mid 0 \}.
+\]
+\end{example}
+
+\subsection{Ordinal Arithmetic}
+Surreal numbers naturally generalize ordinals, allowing operations such as addition, multiplication, and exponentiation.
+
+\begin{definition}[Ordinal]
+An ordinal $\ord$ is expressed as:
+\[
+\ord = \omega^w + k, \quad w, k \in \mathbb{N}.
+\]
+\end{definition}
+
+\begin{remark}
+Ordinal arithmetic includes:
+\[
+\omega + 1 > \omega, \quad \omega \cdot 2 = \omega, \quad \omega^\omega > \omega^2.
+\]
+\end{remark}
+
+\section{Dynamic Graphs with Surreal Distances}
+
+\subsection{Graph Framework}
+We define a dynamic graph $\house = (V, E, W)$:
 \begin{itemize}
-    \item Addition: \( \omega + 1, \quad \omega + \epsilon \).
-    \item Multiplication: \( \omega \cdot 2, \quad \omega \cdot \omega = \omega^2 \).
-    \item Exponentiation: \( \omega^\omega, \quad \omega^{\omega^\omega} \).
+    \item $V$: Nodes (e.g., spaces),
+    \item $E$: Edges connecting nodes,
+    \item $W$: Weights as surreal distances.
 \end{itemize}
 
-\subsection{Applications}
-Surreal numbers model:
+\begin{definition}[Surreal Distance]
+The weight $w_{uv} \in W$ of an edge $(u, v)$ is a surreal ordinal:
+\[
+w_{uv} = \omega^w + k \text{ or an infinitesimal } \epsilon.
+\]
+\end{definition}
+
+\subsection{Edge Types and Recursions}
+Edges can take the following forms:
+\begin{enumerate}
+    \item \textbf{Single Edge:} A standard edge with a surreal weight,
+    \item \textbf{Infinite Edge:} A recursive edge repeating transfinite times,
+    \item \textbf{Fractional Edge:} A fractional path with rational weight,
+    \item \textbf{Paradoxical Edge:} An edge with undefined behavior.
+\end{enumerate}
+
+\begin{example}[The Five-Minute Hallway]
+This hallway grows infinitely when entered:
+\[
+\text{Nodes: Entrance } \to \text{ Hallway } \to \text{ Abyss}.
+\]
+Edges are weighted as:
+\[
+\text{Entrance} \xrightarrow{\omega} \text{Hallway}, \quad \text{Hallway} \xrightarrow{\omega^2} \text{Abyss}.
+\]
+\end{example}
+
+\section{Time Evolution and Monodromy}
+
+\subsection{Transformation Rules}
+A time-evolving graph $\house(t)$ evolves based on transformations:
+\[
+\text{Transformation: } \quad T : E \to E', \quad w' = w + \epsilon.
+\]
+Transformations may include:
 \begin{itemize}
-    \item Infinite hierarchies (e.g., \( \omega^2 \), \( \omega^\omega \)).
-    \item Infinitesimal effects (\( \epsilon \)).
-    \item Arbitrary scales of influence or cost.
+    \item Local perturbations,
+    \item Discontinuous jumps,
+    \item Resonance interactions.
 \end{itemize}
 
-\section{Dynamic Graph Framework}
+\begin{definition}[Monodromy]
+The \emph{monodromy} of a time-evolving graph captures how nodes and edges transform over time, including:
+\[
+\text{Singularities: Special times where continuity breaks}.
+\]
+\end{definition}
 
-\subsection{Nodes, Edges, and Weights}
-A graph \( G \) is defined as:
-\begin{equation}
-G = (V, E, W),
-\end{equation}
-where \( V \) is the set of nodes (surreal numbers), \( E \) is the set of edges, and \( W \) assigns weights to edges (ordinals).
+\subsection{Conditions for Stability}
+\begin{theorem}[Stability Condition]
+A dynamic graph $\house(t)$ is stable if:
+\[
+\forall u, v \in V: \quad \text{flow through } E \text{ remains bounded as } t \to \infty.
+\]
+\end{theorem}
 
-\subsection{Flow Dynamics}
-Flow rules govern the graph:
-\begin{itemize}
-    \item \textbf{Update Flow:} Weights decrease over time to simulate flow dynamics.
-    \item \textbf{Detect Bottlenecks:} Nodes with insufficient outgoing flow are identified.
-    \item \textbf{Perturbations:} New nodes or edges are added to resolve bottlenecks.
-\end{itemize}
+\section{Paradoxical Spaces and Sheaf Memory}
 
-\subsection{Visualization}
-Graph visualization uses Graphviz to display nodes, edges, and weights dynamically.
+\begin{example}[Mirror Room]
+The mirror room generates infinite reflections at infinitesimal steps:
+\[
+\text{Origin} \xrightarrow{\epsilon} \text{First Reflection} \xrightarrow{\epsilon} \text{Second Reflection} \to \dots.
+\]
+The sequence collapses to an abyss as $n \to \infty$.
+\end{example}
 
-\section{Implementation}
-
-\subsection{Haskell Code}
-The implementation integrates surreal numbers into a dynamic graph framework. The key functions include flow updates, bottleneck detection, and perturbations. Below is an excerpt of the Haskell code:
-
-\begin{lstlisting}[language=Haskell, caption=Ordinal and Surreal Number Definitions]
-data Ordinal = Finite Int | Transfinite Int Int deriving (Eq, Show)
-
-data Surreal = Zero
-             | Node { left :: [Surreal], right :: [Surreal], birthday :: Ordinal }
-             deriving (Eq, Show)
-
-type Node = Surreal
-type Weight = Ordinal
-type Edge = (Node, Weight)
-type Graph = Map.Map Node [Edge]
-\end{lstlisting}
-
-\begin{lstlisting}[language=Haskell, caption=Flow Updates and Bottleneck Detection]
-updateFlow :: Graph -> Graph
-updateFlow = Map.mapWithKey updateNodeFlow
-  where
-    updateNodeFlow _ = map (\(n, w) -> (n, addOrdinals w (Finite (-1))))
-
-detectBottlenecks :: Graph -> [Node]
-detectBottlenecks graph =
-  Map.keys $ Map.filter (\edges -> sumWeights edges < Finite 1) graph
-  where
-    sumWeights = foldr (addOrdinals . snd) (Finite 0)
-\end{lstlisting}
-
-\subsection{Graph Visualization}
-The graph is visualized using Graphviz. Nodes represent surreal numbers, and edges are annotated with ordinal weights. The following function generates a DOT file:
-
-\begin{lstlisting}[language=Haskell, caption=Graph Visualization with Graphviz]
-visualizeGraph :: Graph -> FilePath -> IO ()
-visualizeGraph graph filePath = do
-    let dotGraph = GVM.digraph (GVT.Str "SurrealGraph") $ do
-            GVM.graphAttrs [GVA.RankDir GVA.FromLeft]
-            forM_ (Map.toList graph) $ \(src, edges) -> do
-                forM_ edges $ \(dst, weight) -> do
-                    GVM.edge (GVT.Str $ TL.pack $ showNode src)
-                           (GVT.Str $ TL.pack $ showNode dst)
-                           [GVA.Label $ GVA.StrLabel $ TL.pack $ showWeight weight]
-
-    TLIO.writeFile (filePath ++ ".dot") (GV.printDotGraph dotGraph)
-    callCommand $ "dot -Tpng -o " ++ filePath ++ ".png " ++ filePath ++ ".dot"
-\end{lstlisting}
-
-\section{Applications}
-
-\subsection{Traffic Optimization}
-Nodes represent intersections, and edges represent roads with weights as congestion levels. Random perturbations, such as opening new lanes, improve flow efficiency.
-
-\subsection{Knowledge Graphs}
-Nodes are concepts, and edges represent influence or association. Perturbations simulate the introduction of new ideas.
-
-\subsection{Policy Negotiation}
-Nodes represent policies, and edges encode dependencies. Flow rules guide consensus-building.
+\begin{remark}
+The \emph{sheaf-like memory} structure ensures that information about nodes persists through singularities and transformations.
+\end{remark}
 
 \section{Conclusion}
 
-This framework unifies surreal numbers and dynamic graph theory, offering new tools for modeling hierarchical and complex systems. Future work will focus on real-time optimization and interactive visualizations.
+We have developed a framework for time-evolving graphs with surreal distances, transformations, and paradoxical structures. Applications span recursive geometries, dynamic systems, and semiotic spaces.
+
+Future directions include:
+\begin{itemize}
+    \item Extending monodromy to higher-dimensional spaces,
+    \item Applying the framework to physical systems with non-standard flows,
+    \item Investigating connections to game theory and logic.
+\end{itemize}
+
+\bibliographystyle{plain}
+\begin{thebibliography}{9}
+\bibitem{conway} Conway, J. H. (1976). \textit{On Numbers and Games}.
+\bibitem{graph} Harary, F. (1969). \textit{Graph Theory}.
+\bibitem{house} Danielewski, M. Z. (2000). \textit{House of Leaves}.
+\end{thebibliography}
 
 \end{document}

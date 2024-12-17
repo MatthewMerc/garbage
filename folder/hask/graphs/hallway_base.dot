@@ -1,0 +1,6 @@
+digraph HouseGraph {
+    graph [rankdir=LR];
+    "Space \"Entrance\"" -> "UnSpace \"Hallway\"" [label="SurrealDistance ω (×1)"];
+    "UnSpace \"Hallway\"" -> "Space \"Entrance\"" [label="Physical 67"];
+    "UnSpace \"Hallway\"" -> Abyss [label="SurrealDistance ω^2 (×ω)"];
+}

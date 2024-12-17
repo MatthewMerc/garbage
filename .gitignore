@@ -4,3 +4,4 @@
 *.log
 *.synctex.gz
 folder/hask/graphs/dist-newstyle
+*.png

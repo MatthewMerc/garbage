@@ -1,0 +1,7 @@
+digraph HouseGraph {
+    graph [rankdir=LR];
+    "Space \"MirrorStart\"" -> "UnSpace \"Reflection\"" [label="SurrealDistance 1 (×0)"];
+    "Space \"MirrorStart\"" -> "UnSpace \"HalfSpace\"" [label="Physical 1 (×1 % 2)"];
+    "UnSpace \"HalfSpace\"" -> Abyss [label=Paradox];
+    "UnSpace \"Reflection\"" -> "UnSpace \"Reflection\"" [label="SurrealDistance 1 (×1)"];
+}
