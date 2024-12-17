@@ -95,6 +95,8 @@ data Monodromy = Monodromy {
 -- Section 3: House Space Structures
 -- ====================================
 
+-- Surprise! I'm a crazy person! You have to read House of Leaves now to continue understanding code.
+
 -- Different types of spaces in our impossible house
 data HouseSpace =
     Space String           -- Normal, "real" spaces
