@@ -1,12 +1,12 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
-\contentsline {section}{\numberline {2}Surreal Numbers and Ordinals}{2}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Surreal Numbers}{2}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Ordinal Arithmetic}{2}{subsection.2.2}%
-\contentsline {section}{\numberline {3}Dynamic Graphs with Surreal Distances}{3}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Graph Framework}{3}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Edge Types and Recursions}{3}{subsection.3.2}%
-\contentsline {section}{\numberline {4}Time Evolution and Monodromy}{3}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Transformation Rules}{3}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Conditions for Stability}{4}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Paradoxical Spaces and Sheaf Memory}{4}{section.5}%
-\contentsline {section}{\numberline {6}Conclusion}{4}{section.6}%
+\contentsline {section}{\numberline {2}Recursive Games on Dynamic Graphs}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Equilibrium and Resonance}{3}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Monodromy and Resonance}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Monodromy in Dynamic Graphs}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Resonance Conditions}{3}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Impossible Spaces and Recursive Dynamics}{3}{section.4}%
+\contentsline {section}{\numberline {5}Applications}{4}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Recursive Negotiation}{4}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}AI and Multi-Agent Systems}{4}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Climate Policy}{4}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Conclusions and Future Work}{4}{section.6}%

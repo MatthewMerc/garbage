@@ -3,23 +3,11 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage{tikz}
 \geometry{margin=1in}
 
-% Custom commands
-\newcommand{\ord}[0]{\mathcal{O}}
-\newcommand{\sur}[0]{\mathcal{S}}
-\newcommand{\house}[0]{\mathcal{H}}
-
-% Theorem Environments
-\newtheorem{definition}{Definition}[section]
-\newtheorem{example}{Example}[section]
-\newtheorem{remark}{Remark}[section]
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{lemma}{Lemma}[section]
-
-\title{Time-Evolving Paradoxical Spaces:\\A Dynamic Graph Framework with Surreal Distances}
-\author{Author Name}
+\title{\textbf{Recursive Games, Surreal Payoffs, and Impossible Spaces:\\
+A Unified Framework for Dynamic Graph Systems}}
+\author{Your Name}
 \date{\today}
 
 \begin{document}
@@ -27,164 +15,145 @@
 \maketitle
 
 \begin{abstract}
-We present a novel mathematical framework for modeling time-evolving graphs with surreal ordinal distances and recursive paradoxical spaces. Building on surreal number theory, dynamic graph systems, and memory-like structures from sheaf theory, we analyze the evolution of spaces over time. This approach incorporates infinitesimal and transfinite changes, resonance phenomena, and singularities. Applications include non-Euclidean geometries, dynamic systems, and semiotic paradoxes inspired by recursive spaces such as the \emph{House of Leaves}.
+We propose a novel mathematical framework that unifies recursive game theory, dynamic graph systems, and surreal-valued payoffs. By integrating infinitesimal and transfinite numbers into game dynamics, we model decision-making across evolving graphs where perturbations, singularities, and resonance points govern equilibria. Monodromy, inspired by algebraic topology, describes the behavior of games under recursion, while impossible spaces provide a conceptual metaphor for decision systems that collapse or stabilize across infinite paths. This work bridges game theory, graph dynamics, and recursive systems, with applications in AI training, climate policy, and strategic negotiations.
 \end{abstract}
 
-\tableofcontents
-
 \section{Introduction}
+Classical game theory models static equilibria, but many real-world systems involve recursion, evolution, and infinite decision layers. Negotiations, climate agreements, and AI training systems exhibit delays, adjustments, and perturbations that can only be captured by a recursive framework.
 
-Spaces that evolve recursively over time, exhibit paradoxical growth, or involve transfinite measures require new mathematical tools. Traditional graph theory is insufficient for representing:
+We introduce a new framework for recursive games defined on dynamic graphs:
 \begin{itemize}
-    \item Flows through spaces with infinitesimal and infinite distances,
-    \item Dynamic transformations of nodes and edges over time,
-    \item Singularities and resonance points where spatial continuity breaks.
+    \item Nodes represent decision states that evolve under recursive strategies.
+    \item Edges carry surreal-valued weights, including infinitesimal penalties (\(\epsilon\)) and transfinite rewards (\(\omega\)).
+    \item Perturbations dynamically adjust nodes, edges, and payoffs, leading to emergent equilibria at resonance points.
 \end{itemize}
 
-Our framework builds on three primary tools:
-\begin{enumerate}
-    \item \textbf{Surreal Numbers:} Recursive structures that model infinite and infinitesimal changes,
-    \item \textbf{Dynamic Graphs:} Graphs with evolving nodes, edges, and surreal weights,
-    \item \textbf{Monodromy and Memory:} Structures inspired by sheaf theory to capture time evolution and resonance.
-\end{enumerate}
+Inspired by *impossible spaces* like those in *House of Leaves* \cite{danielewski2000house}, we model recursive decision-making in systems where strategies collapse, stabilize, or oscillate under infinite recursion. Monodromy maps track strategy evolution across singularities, providing tools to analyze game equilibria under perturbations.
 
-This paper introduces the mathematical definitions, properties, and examples for analyzing such spaces.
-
-\section{Surreal Numbers and Ordinals}
-
-\subsection{Surreal Numbers}
-\begin{definition}[Surreal Numbers]
-A surreal number $\sur$ is defined recursively as:
-\[
-\sur = \{ L \mid R \}, \quad \text{where } L, R \subseteq \sur \text{ and } L < R.
-\]
-\end{definition}
-
-Surreal numbers extend real numbers to include infinitesimal ($\epsilon$) and transfinite ($\omega$) values.
-
-\begin{example}[Basic Surreal Numbers]
-\[
-0 = \{ \mid \}, \quad 1 = \{ 0 \mid \}, \quad -1 = \{ \mid 0 \}, \quad \frac{1}{2} = \{ 0 \mid 1 \}.
-\]
-Infinitesimals and infinities are given as:
-\[
-\epsilon = \{ 0 \mid \}, \quad \omega = \{ \mid 0 \}.
-\]
-\end{example}
-
-\subsection{Ordinal Arithmetic}
-Surreal numbers naturally generalize ordinals, allowing operations such as addition, multiplication, and exponentiation.
-
-\begin{definition}[Ordinal]
-An ordinal $\ord$ is expressed as:
-\[
-\ord = \omega^w + k, \quad w, k \in \mathbb{N}.
-\]
-\end{definition}
-
-\begin{remark}
-Ordinal arithmetic includes:
-\[
-\omega + 1 > \omega, \quad \omega \cdot 2 = \omega, \quad \omega^\omega > \omega^2.
-\]
-\end{remark}
-
-\section{Dynamic Graphs with Surreal Distances}
-
-\subsection{Graph Framework}
-We define a dynamic graph $\house = (V, E, W)$:
+\section{Recursive Games on Dynamic Graphs}
+Let \( G_t = (N_t, E_t) \) be a graph at time \( t \), where:
 \begin{itemize}
-    \item $V$: Nodes (e.g., spaces),
-    \item $E$: Edges connecting nodes,
-    \item $W$: Weights as surreal distances.
+    \item \( N_t \) is the set of nodes (decision states),
+    \item \( E_t \) is the set of edges with weights \( w_t \in \mathbb{S} \) (surreal numbers).
 \end{itemize}
 
-\begin{definition}[Surreal Distance]
-The weight $w_{uv} \in W$ of an edge $(u, v)$ is a surreal ordinal:
-\[
-w_{uv} = \omega^w + k \text{ or an infinitesimal } \epsilon.
-\]
-\end{definition}
-
-\subsection{Edge Types and Recursions}
-Edges can take the following forms:
-\begin{enumerate}
-    \item \textbf{Single Edge:} A standard edge with a surreal weight,
-    \item \textbf{Infinite Edge:} A recursive edge repeating transfinite times,
-    \item \textbf{Fractional Edge:} A fractional path with rational weight,
-    \item \textbf{Paradoxical Edge:} An edge with undefined behavior.
-\end{enumerate}
-
-\begin{example}[The Five-Minute Hallway]
-This hallway grows infinitely when entered:
-\[
-\text{Nodes: Entrance } \to \text{ Hallway } \to \text{ Abyss}.
-\]
-Edges are weighted as:
-\[
-\text{Entrance} \xrightarrow{\omega} \text{Hallway}, \quad \text{Hallway} \xrightarrow{\omega^2} \text{Abyss}.
-\]
-\end{example}
-
-\section{Time Evolution and Monodromy}
-
-\subsection{Transformation Rules}
-A time-evolving graph $\house(t)$ evolves based on transformations:
-\[
-\text{Transformation: } \quad T : E \to E', \quad w' = w + \epsilon.
-\]
-Transformations may include:
+\subsection{Surreal-Valued Payoffs}
+Surreal numbers generalize payoffs to include:
 \begin{itemize}
-    \item Local perturbations,
-    \item Discontinuous jumps,
-    \item Resonance interactions.
+    \item **Infinitesimal penalties**: \( \epsilon \), where \( \epsilon > 0 \) but \( \epsilon < r \, \forall r > 0 \),
+    \item **Transfinite rewards**: \( \omega \), representing infinite magnitudes,
+    \item **Collapsed costs**: Negative infinities (\(-\omega\)) when recursion breaks down.
 \end{itemize}
 
-\begin{definition}[Monodromy]
-The \emph{monodromy} of a time-evolving graph captures how nodes and edges transform over time, including:
+The payoff for a recursive strategy is:
 \[
-\text{Singularities: Special times where continuity breaks}.
+u(t) = \sum_{i=0}^t w_i - k\epsilon, \quad \text{where } k \to \infty \text{ collapses the strategy.}
 \]
-\end{definition}
 
-\subsection{Conditions for Stability}
-\begin{theorem}[Stability Condition]
-A dynamic graph $\house(t)$ is stable if:
+\subsection{Game Evolution Rules}
+The graph \( G_t \) evolves according to:
 \[
-\forall u, v \in V: \quad \text{flow through } E \text{ remains bounded as } t \to \infty.
+G_{t+1} = f(G_t, \Delta_t),
 \]
-\end{theorem}
+where \( \Delta_t \) introduces perturbations:
+\begin{itemize}
+    \item Adding new nodes: Expanding the strategy space,
+    \item Adjusting edge weights: Rebalancing payoffs under recursion,
+    \item Removing edges: Eliminating dominated strategies.
+\end{itemize}
 
-\section{Paradoxical Spaces and Sheaf Memory}
-
-\begin{example}[Mirror Room]
-The mirror room generates infinite reflections at infinitesimal steps:
+\subsection{Example: Recursive Negotiation}
+Consider two agents negotiating recursively over time:
+\begin{itemize}
+    \item Cooperation yields payoff \( 1 \) at time \( t \),
+    \item Delay imposes an infinitesimal penalty \( \epsilon \),
+    \item Infinite delays collapse the negotiation into \( -\omega \).
+\end{itemize}
+The recursive payoff is:
 \[
-\text{Origin} \xrightarrow{\epsilon} \text{First Reflection} \xrightarrow{\epsilon} \text{Second Reflection} \to \dots.
+u(t) = \begin{cases}
+1 - k\epsilon & \text{for finite delays,} \\
+-\omega & \text{for infinite delays.}
+\end{cases}
 \]
-The sequence collapses to an abyss as $n \to \infty$.
-\end{example}
 
-\begin{remark}
-The \emph{sheaf-like memory} structure ensures that information about nodes persists through singularities and transformations.
-\end{remark}
+Equilibrium occurs at **resonance points** where:
+\[
+\text{Cost(Cooperate)} = \text{Cost(Delay)}.
+\]
+
+\section{Monodromy and Resonance Analysis}
+Monodromy tracks changes in graph states under recursion:
+\[
+\Phi: G_0 \to G_t,
+\]
+where \( \Phi \) describes how nodes, edges, and weights transform as recursion progresses.
+
+\subsection{Resonance Points}
+Resonance points stabilize recursive dynamics. For a node \( n \), resonance occurs when:
+\[
+\sum_{t=0}^\infty \Delta u(t) = 0,
+\]
+where \( \Delta u(t) \) captures recursive changes in payoffs.
+
+\subsection{Singularities}
+Singularities arise when strategies collapse:
+\[
+u(t) \to -\omega.
+\]
+These points correspond to boundaries where recursion destabilizes the system.
+
+\section{Impossible Spaces: Conceptual Metaphors}
+Inspired by *House of Leaves* \cite{danielewski2000house}, we interpret recursive graphs as impossible spaces:
+\begin{itemize}
+    \item Nodes represent decision "rooms" that evolve recursively,
+    \item Edges describe surreal-valued paths that connect states,
+    \item Singularities correspond to spatial boundaries dissolving under infinite recursion.
+\end{itemize}
+
+Impossible spaces model phenomena such as:
+\begin{itemize}
+    \item Infinite delays collapsing strategies (\(-\omega\)),
+    \item Emerging pathways under perturbations,
+    \item Recursive oscillations stabilizing at resonance points.
+\end{itemize}
+
+\section{Applications}
+\subsection{AI Training Systems}
+Recursive games provide tools for AI agents balancing:
+\begin{itemize}
+    \item Immediate exploration (finite payoffs),
+    \item Long-term exploitation (transfinite gains),
+    \item Infinitesimal penalties for delays.
+\end{itemize}
+
+\subsection{Strategic Negotiations}
+Recursive delays in negotiations impose increasing costs:
+\[
+u(t) = 1 - k\epsilon, \quad \text{where infinite delays collapse to } -\omega.
+\]
+
+\subsection{Climate Policy Models}
+Infinite recursion models procrastination in climate agreements. Delays increase costs until catastrophic collapse:
+\[
+u(t) \to -\omega \quad \text{as } t \to \infty.
+\]
+
+\section{Future Work}
+This framework opens avenues for:
+\begin{itemize}
+    \item Stochastic extensions for recursive games,
+    \item Empirical validation in multi-agent AI systems,
+    \item Topological analysis of dynamic graphs under perturbations.
+\end{itemize}
 
 \section{Conclusion}
+We developed a unified framework for recursive games, surreal-valued payoffs, and dynamic graph systems. Monodromy and resonance describe equilibria under infinite recursion, while impossible spaces serve as conceptual tools for understanding boundary-breaking dynamics. Applications include AI, negotiations, and climate policy, with future work focusing on stochastic and empirical extensions.
 
-We have developed a framework for time-evolving graphs with surreal distances, transformations, and paradoxical structures. Applications span recursive geometries, dynamic systems, and semiotic spaces.
-
-Future directions include:
-\begin{itemize}
-    \item Extending monodromy to higher-dimensional spaces,
-    \item Applying the framework to physical systems with non-standard flows,
-    \item Investigating connections to game theory and logic.
-\end{itemize}
-
-\bibliographystyle{plain}
 \begin{thebibliography}{9}
-\bibitem{conway} Conway, J. H. (1976). \textit{On Numbers and Games}.
-\bibitem{graph} Harary, F. (1969). \textit{Graph Theory}.
-\bibitem{house} Danielewski, M. Z. (2000). \textit{House of Leaves}.
+\bibitem{conway1976surreal} J. H. Conway, \textit{On Numbers and Games}, Academic Press, 1976.
+\bibitem{danielewski2000house} M. Z. Danielewski, \textit{House of Leaves}, Pantheon Books, 2000.
+\bibitem{von2007game} J. von Neumann and O. Morgenstern, \textit{Theory of Games and Economic Behavior}, Princeton University Press, 2007.
 \end{thebibliography}
 
 \end{document}
