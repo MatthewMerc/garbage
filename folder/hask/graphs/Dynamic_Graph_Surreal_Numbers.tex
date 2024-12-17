@@ -1,0 +1,154 @@
+
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\definecolor{codegray}{gray}{0.9}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{codegray},
+  frame=single,
+  breaklines=true,
+  captionpos=b,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{red}
+}
+
+\title{Dynamic Graph Framework with Surreal Numbers and Visualization}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper presents an extended dynamic graph framework that integrates surreal numbers for representing nodes, edges, and flows. By leveraging ordinal arithmetic and surreal constructions, we model hierarchical and infinite systems such as traffic networks, knowledge graphs, and decision processes. The framework includes dynamic updates, bottleneck detection, perturbation mechanisms, and visualization via Graphviz.
+\end{abstract}
+
+\section{Introduction}
+
+Surreal numbers, introduced by John Horton Conway, provide a universal number system that includes real numbers, infinities, and infinitesimals. These properties make surreal numbers a natural choice for modeling hierarchical and complex systems. This paper demonstrates how surreal numbers can be integrated into a dynamic graph framework, with applications in traffic systems, policy negotiation, and knowledge graphs.
+
+\section{Surreal Numbers and Ordinals}
+
+\subsection{Definition}
+Surreal numbers are defined recursively as:
+\begin{equation}
+x = \{ L | R \},
+\end{equation}
+where \( L \) and \( R \) are sets of surreal numbers such that \( l < r \) for all \( l \in L \) and \( r \in R \).
+
+Ordinals are a subset of surreal numbers that represent hierarchical positions. For example:
+\begin{equation}
+\omega + 1, \quad \omega^2, \quad \omega^\omega.
+\end{equation}
+
+\subsection{Operations}
+Ordinal arithmetic is extended to surreal numbers:
+\begin{itemize}
+    \item Addition: \( \omega + 1, \quad \omega + \epsilon \).
+    \item Multiplication: \( \omega \cdot 2, \quad \omega \cdot \omega = \omega^2 \).
+    \item Exponentiation: \( \omega^\omega, \quad \omega^{\omega^\omega} \).
+\end{itemize}
+
+\subsection{Applications}
+Surreal numbers model:
+\begin{itemize}
+    \item Infinite hierarchies (e.g., \( \omega^2 \), \( \omega^\omega \)).
+    \item Infinitesimal effects (\( \epsilon \)).
+    \item Arbitrary scales of influence or cost.
+\end{itemize}
+
+\section{Dynamic Graph Framework}
+
+\subsection{Nodes, Edges, and Weights}
+A graph \( G \) is defined as:
+\begin{equation}
+G = (V, E, W),
+\end{equation}
+where \( V \) is the set of nodes (surreal numbers), \( E \) is the set of edges, and \( W \) assigns weights to edges (ordinals).
+
+\subsection{Flow Dynamics}
+Flow rules govern the graph:
+\begin{itemize}
+    \item \textbf{Update Flow:} Weights decrease over time to simulate flow dynamics.
+    \item \textbf{Detect Bottlenecks:} Nodes with insufficient outgoing flow are identified.
+    \item \textbf{Perturbations:} New nodes or edges are added to resolve bottlenecks.
+\end{itemize}
+
+\subsection{Visualization}
+Graph visualization uses Graphviz to display nodes, edges, and weights dynamically.
+
+\section{Implementation}
+
+\subsection{Haskell Code}
+The implementation integrates surreal numbers into a dynamic graph framework. The key functions include flow updates, bottleneck detection, and perturbations. Below is an excerpt of the Haskell code:
+
+\begin{lstlisting}[language=Haskell, caption=Ordinal and Surreal Number Definitions]
+data Ordinal = Finite Int | Transfinite Int Int deriving (Eq, Show)
+
+data Surreal = Zero
+             | Node { left :: [Surreal], right :: [Surreal], birthday :: Ordinal }
+             deriving (Eq, Show)
+
+type Node = Surreal
+type Weight = Ordinal
+type Edge = (Node, Weight)
+type Graph = Map.Map Node [Edge]
+\end{lstlisting}
+
+\begin{lstlisting}[language=Haskell, caption=Flow Updates and Bottleneck Detection]
+updateFlow :: Graph -> Graph
+updateFlow = Map.mapWithKey updateNodeFlow
+  where
+    updateNodeFlow _ = map (\(n, w) -> (n, addOrdinals w (Finite (-1))))
+
+detectBottlenecks :: Graph -> [Node]
+detectBottlenecks graph =
+  Map.keys $ Map.filter (\edges -> sumWeights edges < Finite 1) graph
+  where
+    sumWeights = foldr (addOrdinals . snd) (Finite 0)
+\end{lstlisting}
+
+\subsection{Graph Visualization}
+The graph is visualized using Graphviz. Nodes represent surreal numbers, and edges are annotated with ordinal weights. The following function generates a DOT file:
+
+\begin{lstlisting}[language=Haskell, caption=Graph Visualization with Graphviz]
+visualizeGraph :: Graph -> FilePath -> IO ()
+visualizeGraph graph filePath = do
+    let dotGraph = GVM.digraph (GVT.Str "SurrealGraph") $ do
+            GVM.graphAttrs [GVA.RankDir GVA.FromLeft]
+            forM_ (Map.toList graph) $ \(src, edges) -> do
+                forM_ edges $ \(dst, weight) -> do
+                    GVM.edge (GVT.Str $ TL.pack $ showNode src)
+                           (GVT.Str $ TL.pack $ showNode dst)
+                           [GVA.Label $ GVA.StrLabel $ TL.pack $ showWeight weight]
+
+    TLIO.writeFile (filePath ++ ".dot") (GV.printDotGraph dotGraph)
+    callCommand $ "dot -Tpng -o " ++ filePath ++ ".png " ++ filePath ++ ".dot"
+\end{lstlisting}
+
+\section{Applications}
+
+\subsection{Traffic Optimization}
+Nodes represent intersections, and edges represent roads with weights as congestion levels. Random perturbations, such as opening new lanes, improve flow efficiency.
+
+\subsection{Knowledge Graphs}
+Nodes are concepts, and edges represent influence or association. Perturbations simulate the introduction of new ideas.
+
+\subsection{Policy Negotiation}
+Nodes represent policies, and edges encode dependencies. Flow rules guide consensus-building.
+
+\section{Conclusion}
+
+This framework unifies surreal numbers and dynamic graph theory, offering new tools for modeling hierarchical and complex systems. Future work will focus on real-time optimization and interactive visualizations.
+
+\end{document}

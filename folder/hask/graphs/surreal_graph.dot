@@ -1,0 +1,8 @@
+digraph SurrealGraph {
+    graph [rankdir=LR];
+    0 -> "node_ω^(0) + 1" [label="ω^(0)"];
+    0 -> node_ω [label="ω + -1"];
+    0 -> "node_ω^2" [label=ω];
+    "node_ω^(0) + 1" -> node_ω [label=ω];
+    node_ω -> 0 [label="ω + -1"];
+}
